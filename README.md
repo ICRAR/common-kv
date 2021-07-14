@@ -4,5 +4,5 @@ Common code Kevin uses
 ## To add
 
 ```bash
-git submodule add https://github.com/ICRAR/common-kv common-kv
+git submodule add git@github.com:ICRAR/common-kv.git common-kv
 ```
