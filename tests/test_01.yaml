@@ -1,0 +1,11 @@
+test1:
+  files_directory: ../files/V1
+  hdf5_file: main_data_v1.h5
+
+
+common: &common
+  node1: True
+
+test2:
+  <<: *common
+  test2: True
