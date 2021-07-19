@@ -5,6 +5,12 @@ Common code Kevin uses
 
 ```bash
 git submodule add git@github.com:ICRAR/common-kv.git common-kv
+git submodule update --init
+```
+Or when cloning
+
+```bash
+git clone https://github.com/aikiframework/json.git --recursive
 ```
 
 ## To Install
