@@ -19,7 +19,7 @@
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 #    MA 02111-1307  USA
 #
-from yaml_to_kwargs import read_yaml
+from common_kv.yaml_to_kwargs import read_yaml
 
 
 def test_01():
