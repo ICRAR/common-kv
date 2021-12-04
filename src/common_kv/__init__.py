@@ -20,6 +20,6 @@
 #    MA 02111-1307  USA
 #
 
-from .yaml_to_kwargs import read_yaml, check_keys
+from .yaml_to_kwargs import read_yaml, check_keys, get_children
 
-__all__ = ['read_yaml', 'check_keys']
+__all__ = ["read_yaml", "check_keys", "get_children"]

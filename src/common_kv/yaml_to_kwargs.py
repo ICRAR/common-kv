@@ -20,7 +20,7 @@
 #    MA 02111-1307  USA
 #
 from os.path import exists
-from typing import Dict
+from typing import Dict, List, Optional
 
 from ruamel.yaml import YAML
 
@@ -109,12 +109,23 @@ def check_keys(*args, **kwargs):
         raise ValueError(f"The following keys are missing:\n  {error_message}")
 
 
-def get_children(tag, **kwargs):
+def get_children(tag: str, **kwargs) -> Optional[List]:
+    """
+    Get the child of a tag
+
+    Parameters
+    ----------
+    tag
+        the tag to get the children of
+    kwargs
+        the tags to check
+
+    Returns
+    -------
+        None if there are no tags
+        A list of tags
+    """
     if tag not in kwargs or not isinstance(kwargs[tag], dict):
         return None
 
-    return [
-        key
-        for key in kwargs[tag].keys()
-        if key.find('/') == -1
-    ]
+    return [key for key in kwargs[tag].keys() if key.find("/") == -1]
