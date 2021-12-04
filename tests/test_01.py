@@ -19,7 +19,7 @@
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 #    MA 02111-1307  USA
 #
-from common_kv.yaml_to_kwargs import read_yaml
+from common_kv.yaml_to_kwargs import read_yaml, get_children
 
 
 def test_01():
@@ -35,3 +35,38 @@ def test_02():
     assert "common" in config
     assert "test2" in config
     assert "test2/node1" in config
+
+
+def test_03a():
+    config = read_yaml("test_01.yaml")
+
+    children = get_children("test3", **config)
+
+    assert len(children) == 4
+
+    assert "test3" in config
+    assert "test3/child1" in config
+    assert "test3/child2" in config
+    assert "test3/child3" in config
+    assert "test3/child4" in config
+
+    assert "child1" in children
+    assert "child2" in children
+    assert "child3" in children
+    assert "child4" in children
+
+
+def test_03b():
+    config = read_yaml("test_01.yaml")
+
+    children = get_children("not a tag", **config)
+
+    assert children is None
+
+
+def test_03c():
+    config = read_yaml("test_01.yaml")
+
+    children = get_children("test3/child4", **config)
+
+    assert children is None

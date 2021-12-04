@@ -26,6 +26,23 @@ from ruamel.yaml import YAML
 
 
 def make_hierarchy(yaml_config) -> Dict:
+    """
+
+    Parameters
+    ----------
+    yaml_config
+        The YAML data to be processed
+
+    Returns
+    -------
+    Dict
+        A dictionary of the data in the form
+        {
+            'key1/key2': blah1,
+            'key1/key3': blah2
+        }
+
+    """
     dictionary = {}
     for key, value in yaml_config.items():
         if isinstance(value, Dict):
@@ -40,6 +57,25 @@ def make_hierarchy(yaml_config) -> Dict:
 
 
 def read_yaml(yaml_file: str) -> Dict:
+    """
+    Read a yaml file and produce a dictionary of tags
+
+    Parameters
+    ----------
+    yaml_file: str
+        the yaml file to read
+
+    Returns
+    -------
+    Dict
+        A dictionary of the data in the form
+        {
+            'key1/key2': blah1,
+            'key1/key3': blah2
+        }
+
+    """
+
     if not exists(yaml_file):
         raise FileNotFoundError(f"Could not find the file: {yaml_file}")
 
@@ -52,13 +88,33 @@ def read_yaml(yaml_file: str) -> Dict:
 
 def check_keys(*args, **kwargs):
     """
-    Check the keys exist
+    Check the keys exist.
 
-    :param args:
-    :param kwargs:
-    :return:
+    Throws a value exception if the key is missing
+
+    Parameters
+    ----------
+    args
+        all the keys to check
+    kwargs
+        the yaml dictionary
+
+    Returns
+    -------
+        None
     """
     missing_keys = [key for key in args if key not in kwargs]
     if missing_keys:
         error_message = "\n  ".join(missing_keys)
         raise ValueError(f"The following keys are missing:\n  {error_message}")
+
+
+def get_children(tag, **kwargs):
+    if tag not in kwargs or not isinstance(kwargs[tag], dict):
+        return None
+
+    return [
+        key
+        for key in kwargs[tag].keys()
+        if key.find('/') == -1
+    ]
