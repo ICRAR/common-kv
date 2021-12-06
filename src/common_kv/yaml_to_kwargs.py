@@ -125,6 +125,10 @@ def get_children(tag: str, **kwargs) -> Optional[List]:
         None if there are no tags
         A list of tags
     """
+    # From the root tag
+    if tag == "":
+        return [key for key in kwargs.keys() if key.find("/") == -1]
+
     if tag not in kwargs or not isinstance(kwargs[tag], dict):
         return None
 

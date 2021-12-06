@@ -70,3 +70,15 @@ def test_03c():
     children = get_children("test3/child4", **config)
 
     assert children is None
+
+
+def test_03d():
+    config = read_yaml("test_01.yaml")
+
+    children = get_children("", **config)
+
+    assert len(children) == 4
+    assert "test1" in children
+    assert "common" in children
+    assert "test2" in children
+    assert "test3" in children
