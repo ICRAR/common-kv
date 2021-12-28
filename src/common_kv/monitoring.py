@@ -41,7 +41,7 @@ def monitor(
 ):  # sourcery no-metrics
     # Run an infinite loop to constantly monitor the system
     while iterations is None or iterations > 0:
-        log_string = f"{os.linesep}==============================Process Monitor ======================================{os.linesep}"
+        log_string = f"{os.linesep}============================Process Monitor============================{os.linesep}"
 
         if "battery" in monitor_options:
             # Fetch the battery information
