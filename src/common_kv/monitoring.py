@@ -38,10 +38,10 @@ def monitor(
     cpu_interval=1,
     process_parent=0,
     monitor_options: List[str] = ("battery", "network", "memory", "cpu", "processes"),
-):
+):  # sourcery no-metrics
     # Run an infinite loop to constantly monitor the system
     while iterations is None or iterations > 0:
-        log_string = f"==============================Process Monitor ======================================{os.linesep}"
+        log_string = f"{os.linesep}==============================Process Monitor ======================================{os.linesep}"
 
         if "battery" in monitor_options:
             # Fetch the battery information
@@ -102,9 +102,10 @@ def monitor(
         if "processes" in monitor_options:
             # Fetch all the processes associated with me.
             process = psutil.Process()
-            while process_parent > 0:
+            process_parent_ = process_parent
+            while process_parent_ > 0:
                 process = process.parent()
-                process_parent -= 1
+                process_parent_ -= 1
 
             processes = [process_.pid for process_ in process.children(recursive=True)]
 
