@@ -39,6 +39,8 @@ def monitor(
     process_parent=0,
     monitor_options: List[str] = ("battery", "network", "memory", "cpu", "processes"),
 ):  # sourcery no-metrics
+    process_dictionary = {}
+
     # Run an infinite loop to constantly monitor the system
     while iterations is None or iterations > 0:
         log_string = f"{os.linesep}============================Process Monitor============================{os.linesep}"
@@ -89,12 +91,7 @@ def monitor(
         if "cpu" in monitor_options:
             # Fetch the CPU information
             log_string += f"----CPU----{os.linesep}"
-            cpu = [
-                [
-                    f"{cpu_}%"
-                    for cpu_ in psutil.cpu_percent(interval=cpu_interval, percpu=True)
-                ]
-            ]
+            cpu = [[f"{cpu_}%" for cpu_ in psutil.cpu_percent(percpu=True)]]
             log_string += (
                 tabulate(
                     cpu,
@@ -106,46 +103,56 @@ def monitor(
 
         if "processes" in monitor_options:
             # Fetch all the processes associated with me.
-            process = psutil.Process()
+            process = process_dictionary.get(os.getpid(), psutil.Process())
             process_name = process.name()
             process_parent_ = process_parent
             while process_parent_ > 0:
                 process = process.parent()
                 process_parent_ -= 1
 
-            processes = [
+            process_ids = [process.pid] + [
                 process_.pid
                 for process_ in process.children(recursive=True)
                 if process_.name() == process_name
             ]
-            if process_parent > 0:
-                processes.append(process.pid)
+
+            # Remove dead processes from the map
+            for key in process_dictionary:
+                if key not in process_ids:
+                    del process_dictionary[key]
 
             log_string += f"----Processes----{os.linesep}"
 
             process_table = []
-            for process in processes:
+            for process_id in process_ids:
                 # While fetching the processes, some of the subprocesses may exit
                 # Hence we need to put this code in try-except block
                 try:
-                    p = psutil.Process(process)
-                    process_table.append(
-                        [
-                            str(process),
-                            p.name(),
-                            p.status(),
-                            str(p.cpu_percent()) + "%",
-                            p.num_threads(),
-                        ]
-                    )
+                    if process_id in process_dictionary:
+                        p = process_dictionary[process_id]
+                    else:
+                        p = psutil.Process(process_id)
+                        process_dictionary[process_id] = p
+
+                    with p.oneshot():
+                        process_table.append(
+                            [
+                                p.pid,
+                                p.ppid(),
+                                p.name(),
+                                p.status(),
+                                str(p.cpu_percent()) + "%",
+                                p.num_threads(),
+                            ]
+                        )
 
                 except Exception as e:
-                    pass
+                    del process_dictionary[process_id]
 
             log_string += (
                 tabulate(
                     process_table,
-                    headers=["PID", "PNAME", "STATUS", "CPU", "NUM THREADS"],
+                    headers=["PID", "PPID", "PNAME", "STATUS", "CPU", "NUM THREADS"],
                     tablefmt=table_format,
                 )
                 + os.linesep

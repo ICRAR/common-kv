@@ -33,7 +33,7 @@ def test_01():
     monitor(iterations=1, log_function=logger)
 
     assert log_string is not None
-    assert len(log_string) > 0
+    assert len(log_string) == 1
     assert "----Battery Available----" in log_string[0]
     assert "----Networks----" in log_string[0]
     assert "----Memory----" in log_string[0]
@@ -50,9 +50,28 @@ def test_02():
     monitor(iterations=1, log_function=logger, monitor_options=["battery"])
 
     assert log_string is not None
-    assert len(log_string) > 0
+    assert len(log_string) == 1
     assert "----Battery Available----" in log_string[0]
     assert "----Networks----" not in log_string[0]
     assert "----Memory----" not in log_string[0]
     assert "----CPU----" not in log_string[0]
     assert "----Processes----" not in log_string[0]
+
+
+def test_03():
+    log_string = []
+
+    def logger(string):
+        log_string.append(string)
+
+    monitor(
+        sleep=1, iterations=5, log_function=logger, monitor_options=["cpu", "processes"]
+    )
+
+    assert log_string is not None
+    assert len(log_string) == 5
+    assert "----Battery Available----" not in log_string[0]
+    assert "----Networks----" not in log_string[0]
+    assert "----Memory----" not in log_string[0]
+    assert "----CPU----" in log_string[0]
+    assert "----Processes----" in log_string[0]
