@@ -1,7 +1,10 @@
 [build-system]
 requires = [
+    "humanfriendly",
+    "psutil",
     "ruamel.yaml",
     "setuptools>=56",
+    "tabulate",
     "wheel"
 ]
 build-backend = "setuptools.build_meta"

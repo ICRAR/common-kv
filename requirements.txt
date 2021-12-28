@@ -1,2 +1,5 @@
+humanfriendly
+psutil
 pytest
 ruamel.yaml
+tabulate
