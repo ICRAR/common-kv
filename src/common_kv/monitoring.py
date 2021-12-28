@@ -77,7 +77,7 @@ def monitor(
                             format_size(vm.total),
                             format_size(vm.used),
                             format_size(vm.available),
-                            vm.percent,
+                            f"{vm.percent}%",
                         ]
                     ],
                     headers=["Total", "Used", "Available", "Percentage"],
@@ -89,7 +89,12 @@ def monitor(
         if "cpu" in monitor_options:
             # Fetch the CPU information
             log_string += f"----CPU----{os.linesep}"
-            cpu = [psutil.cpu_percent(interval=cpu_interval, percpu=True)]
+            cpu = [
+                [
+                    f"{cpu_}%"
+                    for cpu_ in psutil.cpu_percent(interval=cpu_interval, percpu=True)
+                ]
+            ]
             log_string += (
                 tabulate(
                     cpu,
@@ -102,12 +107,19 @@ def monitor(
         if "processes" in monitor_options:
             # Fetch all the processes associated with me.
             process = psutil.Process()
+            process_name = process.name()
             process_parent_ = process_parent
             while process_parent_ > 0:
                 process = process.parent()
                 process_parent_ -= 1
 
-            processes = [process_.pid for process_ in process.children(recursive=True)]
+            processes = [
+                process_.pid
+                for process_ in process.children(recursive=True)
+                if process_.name() == process_name
+            ]
+            if process_parent > 0:
+                processes.append(process.pid)
 
             log_string += f"----Processes----{os.linesep}"
 
