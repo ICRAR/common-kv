@@ -23,6 +23,7 @@
 #
 
 from .monitoring import monitor
+from .pytorch_lightning import get_model_path
 from .yaml_to_kwargs import read_yaml, check_keys, get_children
 
-__all__ = ["read_yaml", "check_keys", "get_children", "monitor"]
+__all__ = ["read_yaml", "check_keys", "get_children", "monitor", "get_model_path"]
