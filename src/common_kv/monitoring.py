@@ -141,10 +141,11 @@ def monitor(
                                 p.ppid(),
                                 p.name(),
                                 p.status(),
-                                str(p.cpu_percent()) + "%",
+                                f'{str(p.cpu_percent())}%',
                                 p.num_threads(),
                             ]
                         )
+
 
                 except Exception as e:
                     del process_dictionary[process_id]

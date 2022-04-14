@@ -1,5 +1,6 @@
 humanfriendly
 psutil
+pip
 pytest
 ruamel.yaml
 tabulate
