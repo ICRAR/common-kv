@@ -118,10 +118,13 @@ def monitor(
 
         if "gpu" in monitor_options and cuda_available:
             log_string += f"----GPU----{os.linesep}"
-            for id in range(torch.cuda.device_count()):
-                log_string += (
-                    torch.cuda.memory_summary(id, abbreviated=True) + os.linesep
-                )
+            try:
+                for id in range(torch.cuda.device_count()):
+                    log_string += (
+                        torch.cuda.memory_summary(id, abbreviated=True)
+                    )
+            except KeyError:
+                log_string += f"No GPU data found{os.linesep}"
 
         if "processes" in monitor_options:
             # Fetch all the processes associated with me.
