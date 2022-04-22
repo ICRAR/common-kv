@@ -122,7 +122,6 @@ def monitor(
                 gpu_data = [
                     [
                         gpu.id,
-                        gpu.name,
                         f"{gpu.load:.1f}%",
                         format_size(gpu.memoryUsed * 1000**2),
                         format_size(gpu.memoryFree * 1000**2),
@@ -137,7 +136,6 @@ def monitor(
                         gpu_data,
                         headers=[
                             "ID",
-                            "Name",
                             "Load",
                             "Memory Used",
                             "Memory Free",
