@@ -24,6 +24,7 @@
 import os
 from typing import Optional, List
 
+import GPUtil
 import psutil
 import time
 from humanfriendly import format_size
@@ -46,14 +47,13 @@ def monitor(
     ),
 ):  # sourcery no-metrics
     process_dictionary = {}
-    cuda_available = False
+    gpu_available = False
 
     if "gpu" in monitor_options:
         try:
-            import torch
-
-            cuda_available = torch.cuda.is_available()
-        except ImportError:
+            GPUtil.getAvailable(order="first", limit=1)
+            gpu_available = True
+        except ValueError:
             pass
 
     # Run an infinite loop to constantly monitor the system
@@ -116,14 +116,40 @@ def monitor(
                 + os.linesep
             )
 
-        if "gpu" in monitor_options and cuda_available:
+        if "gpu" in monitor_options:
             log_string += f"----GPU----{os.linesep}"
-            try:
-                for id in range(torch.cuda.device_count()):
-                    log_string += (
-                        torch.cuda.memory_summary(id, abbreviated=True)
+            if gpu_available:
+                gpu_data = [
+                    [
+                        gpu.id,
+                        gpu.name,
+                        f"{gpu.load:.1f}%",
+                        format_size(gpu.memoryUsed),
+                        format_size(gpu.memoryFree),
+                        format_size(gpu.totalMemory),
+                        f"{gpu.temperature:.1f}C",
+                    ]
+                    for gpu in GPUtil.getGPUs()
+                ]
+
+                log_string += (
+                    tabulate(
+                        gpu_data,
+                        headers=[
+                            "ID",
+                            "Name",
+                            "Load",
+                            "Memory Used",
+                            "Memory Free",
+                            "Memory Total",
+                            "Temperature",
+                        ],
+                        tablefmt=table_format,
                     )
-            except KeyError:
+                    + os.linesep
+                )
+
+            else:
                 log_string += f"No GPU data found{os.linesep}"
 
         if "processes" in monitor_options:
