@@ -118,24 +118,10 @@ def monitor(
 
         if "gpu" in monitor_options and cuda_available:
             log_string += f"----GPU----{os.linesep}"
-            table = [
-                [
-                    f"{id}",
-                    format_size(torch.cuda.memory_allocated(id)),
-                    format_size(torch.cuda.memory_reserved(id)),
-                    format_size(torch.cuda.max_memory_reserved(id)),
-                ]
-                for id in range(torch.cuda.device_count())
-            ]
-
-            log_string += (
-                tabulate(
-                    table,
-                    headers=["GPU", "Allocated", "Reserved", "Max Reserved"],
-                    tablefmt=table_format,
+            for id in range(torch.cuda.device_count()):
+                log_string += (
+                    torch.cuda.memory_summary(id, abbreviated=True) + os.linesep
                 )
-                + os.linesep
-            )
 
         if "processes" in monitor_options:
             # Fetch all the processes associated with me.
