@@ -75,3 +75,4 @@ def test_03():
     assert "----Memory----" not in log_string[0]
     assert "----CPU----" in log_string[0]
     assert "----Processes----" in log_string[0]
+

@@ -35,13 +35,21 @@ def monitor(
     log_function=print,
     table_format: str = "psql",
     iterations: Optional[int] = None,
-    cpu_interval=1,
     process_parent=0,
-    monitor_options: List[str] = ("battery", "network", "memory", "cpu", "processes"),
+    monitor_options: List[str] = ("battery", "network", "memory", "cpu", "processes", "gpu"),
 ):  # sourcery no-metrics
     process_dictionary = {}
+    cuda_available = False
 
-    # Run an infinite loop to constantly monitor the system
+    if "gpu" in monitor_options:
+        try:
+            import torch
+            cuda_available = torch.cuda.is_available()
+        except ImportError:
+            pass
+
+
+# Run an infinite loop to constantly monitor the system
     while iterations is None or iterations > 0:
         log_string = f"{os.linesep}============================Process Monitor============================{os.linesep}"
 
@@ -100,6 +108,19 @@ def monitor(
                 )
                 + os.linesep
             )
+
+        if "gpu" in monitor_options and cuda_available:
+            log_string += f"----CPU----{os.linesep}"
+            table = []
+            for id in range(torch.cuda.device_count()):
+                table.append([f'{id}',format_size(torch.cuda.memory_allocated(id)), format_size(torch.cuda.memory_reserved(id)), format_size(torch.cuda.max_memory_reserved(id))])
+            log_string += (
+                    tabulate(
+                        table, headers=['GPU', "Allocated", "Reserved", "Max Reserved"], tablefmt=table_format
+                    )
+                    + os.linesep
+            )
+
 
         if "processes" in monitor_options:
             # Fetch all the processes associated with me.
