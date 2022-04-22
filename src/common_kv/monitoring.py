@@ -124,9 +124,9 @@ def monitor(
                         gpu.id,
                         gpu.name,
                         f"{gpu.load:.1f}%",
-                        format_size(gpu.memoryUsed),
-                        format_size(gpu.memoryFree),
-                        format_size(gpu.memoryTotal),
+                        format_size(gpu.memoryUsed * 1000**2),
+                        format_size(gpu.memoryFree * 1000**2),
+                        format_size(gpu.memoryTotal * 1000**2),
                         f"{gpu.temperature:.1f}C",
                     ]
                     for gpu in GPUtil.getGPUs()
