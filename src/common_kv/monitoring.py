@@ -36,7 +36,14 @@ def monitor(
     table_format: str = "psql",
     iterations: Optional[int] = None,
     process_parent=0,
-    monitor_options: List[str] = ("battery", "network", "memory", "cpu", "processes", "gpu"),
+    monitor_options: List[str] = (
+        "battery",
+        "network",
+        "memory",
+        "cpu",
+        "processes",
+        "gpu",
+    ),
 ):  # sourcery no-metrics
     process_dictionary = {}
     cuda_available = False
@@ -44,12 +51,12 @@ def monitor(
     if "gpu" in monitor_options:
         try:
             import torch
+
             cuda_available = torch.cuda.is_available()
         except ImportError:
             pass
 
-
-# Run an infinite loop to constantly monitor the system
+    # Run an infinite loop to constantly monitor the system
     while iterations is None or iterations > 0:
         log_string = f"{os.linesep}============================Process Monitor============================{os.linesep}"
 
@@ -110,17 +117,25 @@ def monitor(
             )
 
         if "gpu" in monitor_options and cuda_available:
-            log_string += f"----CPU----{os.linesep}"
-            table = []
-            for id in range(torch.cuda.device_count()):
-                table.append([f'{id}',format_size(torch.cuda.memory_allocated(id)), format_size(torch.cuda.memory_reserved(id)), format_size(torch.cuda.max_memory_reserved(id))])
-            log_string += (
-                    tabulate(
-                        table, headers=['GPU', "Allocated", "Reserved", "Max Reserved"], tablefmt=table_format
-                    )
-                    + os.linesep
-            )
+            log_string += f"----GPU----{os.linesep}"
+            table = [
+                [
+                    f"{id}",
+                    format_size(torch.cuda.memory_allocated(id)),
+                    format_size(torch.cuda.memory_reserved(id)),
+                    format_size(torch.cuda.max_memory_reserved(id)),
+                ]
+                for id in range(torch.cuda.device_count())
+            ]
 
+            log_string += (
+                tabulate(
+                    table,
+                    headers=["GPU", "Allocated", "Reserved", "Max Reserved"],
+                    tablefmt=table_format,
+                )
+                + os.linesep
+            )
 
         if "processes" in monitor_options:
             # Fetch all the processes associated with me.
@@ -162,11 +177,10 @@ def monitor(
                                 p.ppid(),
                                 p.name(),
                                 p.status(),
-                                f'{str(p.cpu_percent())}%',
+                                f"{str(p.cpu_percent())}%",
                                 p.num_threads(),
                             ]
                         )
-
 
                 except Exception as e:
                     del process_dictionary[process_id]

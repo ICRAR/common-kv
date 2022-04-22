@@ -26,13 +26,12 @@ from typing import Tuple
 
 import numpy as np
 
+
 @dataclass
 class FlatMinMaxScalerValues:
     feature_range: Tuple[float, float]
     minimum: float
     scale_factor: float
-
-
 
 
 class FlatMinMaxScaler:
@@ -78,8 +77,8 @@ class FlatMinMaxScaler:
 
         data_range = data_max - data_min
         self._scale_factor = (
-                                     self._feature_range[1] - self._feature_range[0]
-                             ) / data_range
+            self._feature_range[1] - self._feature_range[0]
+        ) / data_range
         self._minimum = self._feature_range[0] - data_min * self._scale_factor
 
         return self
@@ -98,4 +97,3 @@ class FlatMinMaxScaler:
         return FlatMinMaxScalerValues(
             self._feature_range, self._minimum, self._scale_factor
         )
-
