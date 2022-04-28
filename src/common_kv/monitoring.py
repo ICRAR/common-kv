@@ -22,6 +22,7 @@
 #  MA 02111-1307  USA
 #
 import os
+from datetime import datetime
 from typing import Optional, List
 
 import GPUtil
@@ -58,7 +59,11 @@ def monitor(
 
     # Run an infinite loop to constantly monitor the system
     while iterations is None or iterations > 0:
-        log_string = f"{os.linesep}============================Process Monitor============================{os.linesep}"
+        log_string = (
+            f"{os.linesep}============================Process Monitor============================"
+            + f"{os.linesep}{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+            + f"{os.linesep}"
+        )
 
         if "battery" in monitor_options:
             # Fetch the battery information
@@ -166,8 +171,7 @@ def monitor(
             ]
 
             # Remove dead processes from the map
-            for key in process_dictionary:
-                if key not in process_ids:
+            for key in [key_ for key_ in process_dictionary if key_ not in process_ids]:
                     del process_dictionary[key]
 
             log_string += f"----Processes----{os.linesep}"
@@ -206,6 +210,8 @@ def monitor(
                 )
                 + os.linesep
             )
+
+        log_string +=    "======================================================================="
 
         # Log it
         log_function(log_string)
